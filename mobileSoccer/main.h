@@ -25,4 +25,5 @@ public:
 	void SetRobotColors();
 	void drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title);
 	void VisionStart();
+	void calculateTheLine(double Cx, double Cy, int left, int top, int width, int height);
 };

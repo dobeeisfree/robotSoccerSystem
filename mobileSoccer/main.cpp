@@ -74,7 +74,6 @@ void VisionSystem::SetRobotColors()
 
 void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title)
 {
-	cout << "Now Drawing Part is : [" << title << "] ." << endl;
 	int max = -1;
 	int idx = 0;
 	for (int j = 1; j < numOfLables; j++) {
@@ -90,10 +89,20 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 	int top = stats.at<int>(idx, CC_STAT_TOP);
 	int width = stats.at<int>(idx, CC_STAT_WIDTH);
 	int height = stats.at<int>(idx, CC_STAT_HEIGHT);
-
+	
 	// TODO
-	// Calculate x,y  
+	// Calculate CenterPoint x,y
+	double Cx = (left + width) / 2;
+	double Cy = (top + height) / 2;
+	printf("[%s] CenterPoint (%.2lf, %.2lf) \n", title, Cx, Cy);
+	printf("[%s] left: %d, top: %d, width: %d, height: %d\n", title, left, top, width, height);
+	calculateTheLine(Cx, Cy, left, top, width, height);
 	rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
+}
+
+void VisionSystem::calculateTheLine(double Cx, double Cy, int left, int top, int width, int height)
+{
+
 }
 
 void VisionSystem::VisionStart()
@@ -102,7 +111,7 @@ void VisionSystem::VisionStart()
 	{
 		// print Webcam velocity  
 		int fps = cap.get(CAP_PROP_FPS);
-		cout << fps << endl;
+		cout << "Webcam fps:" << fps << endl;
 
 		Mat img_input, img_hsv;
 		Mat img_binary_team, img_binary_id1, img_binary_id2;
@@ -170,7 +179,7 @@ void VisionSystem::VisionStart()
 int main()
 {
 	VisionSystem vs = VisionSystem();
-	vs.SetVideoSize(320, 240);
+	vs.SetVideoSize(640, 480);
 	if (!cap.isOpened())
 	{
 		cout << "Can not open Cam" << endl;
