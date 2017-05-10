@@ -23,6 +23,6 @@ public:
 	void GenerateTrackbar(char * msg, robot * color, char * TrackbarName);
 	void SetUI(char * msg, robot * teamColor, robot * id1Color, robot * id2Color);
 	void SetRobotColors();
-	void drawAreaBox(Mat img_input, Mat stats, int numOfLables);
+	void drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title);
 	void VisionStart();
 };

@@ -72,8 +72,9 @@ void VisionSystem::SetRobotColors()
 	id2.SetV(47, 255);
 }
 
-void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables)
+void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title)
 {
+	cout << "Now Drawing Part is : [" << title << "] ." << endl;
 	int max = -1;
 	int idx = 0;
 	for (int j = 1; j < numOfLables; j++) {
@@ -90,6 +91,8 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables)
 	int width = stats.at<int>(idx, CC_STAT_WIDTH);
 	int height = stats.at<int>(idx, CC_STAT_HEIGHT);
 
+	// TODO
+	// Calculate x,y  
 	rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
 }
 
@@ -152,9 +155,9 @@ void VisionSystem::VisionStart()
 			id2_stats, centroids, 8, CV_32S);
 
 		// Draw Area box
-		drawAreaBox(img_input, team_stats, team.numOfLables);
-		drawAreaBox(img_input, id1_stats, id1.numOfLables);
-		drawAreaBox(img_input, id2_stats, id2.numOfLables);
+		drawAreaBox(img_input, team_stats, team.numOfLables, "team");
+		drawAreaBox(img_input, id1_stats, id1.numOfLables, "id1");
+		drawAreaBox(img_input, id2_stats, id2.numOfLables, "id2");
 
 		//imshow("binary image", team.img_binary);
 		imshow("Origin IMAGE", img_input);
