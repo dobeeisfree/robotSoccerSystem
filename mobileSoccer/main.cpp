@@ -2,10 +2,12 @@
 
 VisionSystem::VisionSystem()
 {
+	cout << "VisionSystem 2017.05.11 \n";
 }
 
 VisionSystem::~VisionSystem()
 {
+	cout << "Goodbye~~\n";
 }
 
 void VisionSystem::SetVideoSize(int width, int height)
@@ -88,22 +90,26 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 	int top = stats.at<int>(idx, CC_STAT_TOP);
 	int width = stats.at<int>(idx, CC_STAT_WIDTH);
 	int height = stats.at<int>(idx, CC_STAT_HEIGHT);
-	printf("[%s] (%d, %d, %d, %d)\n", title, left, top, width, height);
-
+	//os_cc_stats << "[" << title << "]" << "(left:" << left << ", top:" << top << ", width:" << width << ", height:" << height << ")";
+	
 	if (strcmp(title, "id1") == 0)
 	{
 		x_one = round((double)(left + (double)(width / 2)));
 		y_one = round((double)(top + (double)(height / 2)));
-		printf("[%s] round:(%lf, %lf)\n", title, x_one, y_one);
 	}
 	else if (strcmp(title, "id2") == 0)
 	{
 		x_two = round((double)(left + (double)(width / 2)));
 		y_two = round((double)(top + (double)(height / 2)));
-		printf("[%s] round:(%lf, %lf)\n", title, x_two, y_two);
 	}
 
 	rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
+}
+
+void VisionSystem::drawLine(Mat& img_input, double x1, double y1, double x2, double y2)
+{
+	line(img_input, cvPoint(Rx, Ry), cvPoint(Cx, Cy), CV_RGB(255, 0, 0), 1, 8, 0);
+	line(img_input, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(255, 255, 255), 1, 8, 0);
 }
 
 void VisionSystem::makeLine(double x1, double y1, double x2, double y2)
@@ -130,57 +136,89 @@ void VisionSystem::findCenterPoint(double x1, double y1, double x2, double y2)
 
 void VisionSystem::makeTheta(double x1, double y1, double x2, double y2)
 {
-	theta = atan(tan((y1 - y2) / (x1 - x2) - (3.1415f / 4)));
+	//theta = atan((y1 - y2) / (x1 - x2)) - (3.1415f / 4);
+	theta = (CV_PI / 4);
+	//theta = 20;
 }
 
-void VisionSystem::rtnRobotsDirection(double x)
+void VisionSystem::rtnRobotsDirection(double x, double y)
 {
 	//회전식: 
-	Rx = (x - Cx)*cos(theta) - (returnY(x) - Cy)*sin(theta);
-	Ry = (returnY(x) - Cy)*cos(theta) + (x - Cx)*sin(theta);
+	Rx = (x)*cos(theta) - (y)*sin(theta);
+	Ry = (y)*cos(theta) + (x)*sin(theta);
 	//좌표의 형태 : (x, returnY(x))
-	cout << "두 점 사이를 이은 식: " << "y =" << a << "x+" << b << endl;
+	os_yaxb << "connected line within two idcolors: y = " << a << "x + " << b;
 
 	a2 = double(Ry - Cy) / (Rx - Cx);
 	b2 = Ry - a2*Rx;
-
-	cout << "로봇의 방향을 가리키는 직선: " << "y =" << a2 << "x+" << b2 << endl;
+	os_ya2b2 << "direction line: " << "y = " << a2 << "x + " << b2;
 }
 
 
-void VisionSystem::calculateTheLine(double x1, double y1, double x2, double y2)
+void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double x2, double y2)
 {
-	printf("each CenterPoint : (%lf, %lf), (%lf, %lf)\n", x1, y1, x2, y2);
-
 	makeLine(x1, y1, x2, y2);
 	findCenterPoint(x1, y1, x2, y2);
 	makeTheta(x1, y1, x2, y2);
 	//for (int i = 0; i < 100; i++)
 	//{
-	rtnRobotsDirection(x1);
+	rtnRobotsDirection(x1, y1);
 	//}
+	drawLine(img_input, x1, y1, x2, y2);
+}
+
+void VisionSystem::drawText(Mat& img_input)
+{
+	os_id1 << "id1 (" << x_one << ", " << y_one << ")";
+	os_id2 << "id2 (" << x_two << ", " << y_two << ")";
+
+	Point textOrg1(10, 300);
+	Point textOrg2(10, 320);
+	Point textOrg3(10, 340);
+	Point textOrg4(10, 360);
+	Point textOrg5(10, 380);
+	Point textOrg6(10, 400);
+
+	const int fontFace = CV_FONT_HERSHEY_SIMPLEX;
+	const double fontScale = 0.5; 
+	const int thickness = 1;
+	
+	putText(img_input, os_webfps.str(), textOrg1, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	//putText(img_input, os_cc_stats.str(), textOrg2, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_id1.str(), textOrg3, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_id2.str(), textOrg4, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_yaxb.str(), textOrg5, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_ya2b2.str(), textOrg6, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	
+	os_webfps.str("");
+	//os_cc_stats.str("");
+	os_id1.str("");
+	os_id2.str("");
+	os_yaxb.str("");
+	os_ya2b2.str("");
 }
 
 void VisionSystem::VisionStart()
 {
 	while (true)
-	{
-		// 생각해보자 콘솔유아이
-		system("cls");
-
+	{	
 		// print Webcam velocity  
 		int fps = cap.get(CAP_PROP_FPS);
-		cout << "Webcam fps:" << fps << endl;
+		os_webfps << "Webcam fps : " << fps;
 
 		Mat img_input, img_hsv;
 		Mat img_binary_team, img_binary_id1, img_binary_id2;
+		Mat frame;
 
 		// Get image from Cam
 		if (!cap.read(img_input))
 		{
-			cout << "Can not find web camm..." << endl;
+			cout << "Can not find web camm...\n";
 			break;
 		}
+
+		// Save frame
+		cap >> frame;
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
@@ -226,8 +264,11 @@ void VisionSystem::VisionStart()
 		drawAreaBox(img_input, team_stats, team.numOfLables, "team");
 		drawAreaBox(img_input, id1_stats, id1.numOfLables, "id1");
 		drawAreaBox(img_input, id2_stats, id2.numOfLables, "id2");
-		calculateTheLine(x_one, y_one, x_two, y_two);
-
+		calculateTheLine(img_input ,x_one, y_one, x_two, y_two);
+		
+		// Draw Text on Frame
+		drawText(img_input);
+		
 		//imshow("binary image", team.img_binary);
 		imshow("Origin IMAGE", img_input);
 
