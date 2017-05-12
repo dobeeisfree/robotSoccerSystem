@@ -127,7 +127,7 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 
 void VisionSystem::drawLine(Mat& img_input, double x1, double y1, double x2, double y2)
 {
-	line(img_input, cvPoint(Rx, Ry), cvPoint(Cx, Cy), CV_RGB(255, 0, 0), 1, 8, 0);
+	line(img_input, cvPoint(Rx, Ry), cvPoint(Cx, Cy), CV_RGB(0, 0, 0), 3, 8, 0);
 	line(img_input, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(255, 255, 255), 1, 8, 0);
 }
 
@@ -163,8 +163,13 @@ void VisionSystem::makeTheta(double x1, double y1, double x2, double y2)
 void VisionSystem::rtnRobotsDirection(double x, double y)
 {
 	//회전식: 
+	x = x - Cx;
+	y = y - Cy;
 	Rx = (x)*cos(theta) - (y)*sin(theta);
 	Ry = (y)*cos(theta) + (x)*sin(theta);
+
+	Rx += Cx;
+	Ry += Cy;
 	//좌표의 형태 : (x, returnY(x))
 	os_yaxb << "connected line within two idcolors: y = " << a << "x + " << b;
 
