@@ -13,39 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\utils">
+      <UniqueIdentifier>{dab5de7c-b729-449a-8d24-8df7c0f63eeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\utils">
+      <UniqueIdentifier>{a16d59ef-7983-4ea7-95e2-58004fea63e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="gui_text.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\utils</Filter>
     </ClCompile>
     <ClCompile Include="object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TextPutOnFrame.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\utils</Filter>
     </ClCompile>
     <ClCompile Include="setup.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPutOnFrame.cpp">
+      <Filter>소스 파일\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gui_text.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="main.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="object.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="gui_text.h">
+      <Filter>헤더 파일\utils</Filter>
     </ClInclude>
-    <ClInclude Include="TextPutOnFrame.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="object.h">
+      <Filter>헤더 파일\utils</Filter>
     </ClInclude>
     <ClInclude Include="setup.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TextPutOnFrame.h">
+      <Filter>헤더 파일\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
