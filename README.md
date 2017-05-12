@@ -4,7 +4,7 @@ media-midterm-projects!
 > 로봇 1대 이상 실시간 인식 (위치와 방향)  
 
 ## features
-Below is some document of it
+Below are some documents of it
 
 - total scheme  
 (contributor [@dobeeisfree](https://github.com/dobeeisfree))
