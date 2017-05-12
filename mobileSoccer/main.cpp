@@ -74,9 +74,9 @@ void VisionSystem::SetRobotColors()
 	id2.SetV(47, 255);
 
 	// ball color
-	ball.SetH(170, 179);
-	ball.SetS(50, 255);
-	ball.SetV(0, 255);
+	ball.SetH(91, 92);
+	ball.SetS(236, 238);
+	ball.SetV(47, 255);
 }
 
 void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title)
