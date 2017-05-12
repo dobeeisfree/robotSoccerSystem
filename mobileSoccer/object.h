@@ -1,6 +1,6 @@
 #pragma once
 
-class robot
+class object
 {
 public:
 
@@ -15,8 +15,8 @@ public:
 	// Area
 	int numOfLables;
 
-	robot();
-	~robot();
+	object();
+	~object();
 
 	void SetH(int low, int high);
 	void SetS(int low, int high);

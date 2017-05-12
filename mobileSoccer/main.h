@@ -1,5 +1,5 @@
 #pragma once
-#include "robot.h"
+#include "object.h"
 #include "gui_text.h"
 #include <opencv2/core/mat.hpp>  
 #include <opencv2/imgcodecs.hpp>  
@@ -13,7 +13,7 @@ using namespace cv;
 using namespace std;
 
 VideoCapture cap(CAP_NUMBER);				// define WebCam
-robot team, id1, id2 = robot();			// robot colors
+object team, id1, id2, ball = object();			// robot colors
 
 double a, b;
 double a2, b2;
@@ -23,13 +23,16 @@ double Rx, Ry;
 // id1, id2
 double x_one, x_two;
 double y_one, y_two;
+// ball
+double x_ball, y_ball;
 
 ostringstream os_webfps;
-//ostringstream os_cc_stats;
+//ostringstream realtime_decting;
 ostringstream os_id1;
 ostringstream os_id2;
 ostringstream os_yaxb;
 ostringstream os_ya2b2;
+ostringstream os_ball;
 
 class VisionSystem
 {
@@ -37,8 +40,8 @@ public:
 	VisionSystem();
 	~VisionSystem();
 	void SetVideoSize(int width, int height);
-	void GenerateTrackbar(char * msg, robot * color, char * TrackbarName);
-	void SetUI(char * msg, robot * teamColor, robot * id1Color, robot * id2Color);
+	void GenerateTrackbar(char * msg, object * color, char * TrackbarName);
+	void SetUI(char * msg, object * teamColor, object * id1Color, object * id2Color, object * ballColor);
 	void SetRobotColors();
 	void drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title);
 	void VisionStart();

@@ -19,7 +19,7 @@ void VisionSystem::SetVideoSize(int width, int height)
 	cap.set(CAP_PROP_FRAME_HEIGHT, height);
 }
 
-void VisionSystem::GenerateTrackbar(char * msg, robot * color, char * TrackbarName)
+void VisionSystem::GenerateTrackbar(char * msg, object * color, char * TrackbarName)
 {
 	/*
 	for One window, Each Trackbar is generated.
@@ -40,7 +40,7 @@ void VisionSystem::GenerateTrackbar(char * msg, robot * color, char * TrackbarNa
 	cvCreateTrackbar(text.high_v, msg, &color->HighV, 255);
 }
 
-void VisionSystem::SetUI(char * msg, robot * teamColor, robot * id1Color, robot * id2Color)
+void VisionSystem::SetUI(char * msg, object * teamColor, object * id1Color, object * id2Color, object * ballColor)
 {
 	/*
 	msg: window name (we made)
@@ -53,6 +53,7 @@ void VisionSystem::SetUI(char * msg, robot * teamColor, robot * id1Color, robot 
 	GenerateTrackbar(msg, teamColor, "team");
 	GenerateTrackbar(msg, id1Color, "id1");
 	GenerateTrackbar(msg, id2Color, "id2");
+	GenerateTrackbar(msg, ballColor, "ball");
 }
 
 void VisionSystem::SetRobotColors()
@@ -71,6 +72,11 @@ void VisionSystem::SetRobotColors()
 	id2.SetH(8, 39);
 	id2.SetS(168, 255);
 	id2.SetV(47, 255);
+
+	// ball color
+	ball.SetH(170, 179);
+	ball.SetS(50, 255);
+	ball.SetV(0, 255);
 }
 
 void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title)
@@ -90,6 +96,7 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 	int top = stats.at<int>(idx, CC_STAT_TOP);
 	int width = stats.at<int>(idx, CC_STAT_WIDTH);
 	int height = stats.at<int>(idx, CC_STAT_HEIGHT);
+	//realtime_decting << title << ",";
 	//os_cc_stats << "[" << title << "]" << "(left:" << left << ", top:" << top << ", width:" << width << ", height:" << height << ")";
 	
 	if (strcmp(title, "id1") == 0)
@@ -101,6 +108,11 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 	{
 		x_two = round((double)(left + (double)(width / 2)));
 		y_two = round((double)(top + (double)(height / 2)));
+	}
+	else if (strcmp(title, "ball") == 0)
+	{
+		x_ball = round((double)(left + (double)(width / 2)));
+		y_ball = round((double)(top + (double)(height / 2)));
 	}
 
 	rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
@@ -171,31 +183,35 @@ void VisionSystem::drawText(Mat& img_input)
 {
 	os_id1 << "id1 (" << x_one << ", " << y_one << ")";
 	os_id2 << "id2 (" << x_two << ", " << y_two << ")";
+	os_ball << "ball (" << x_ball << ", " << y_ball << ")";
 
-	Point textOrg1(10, 300);
-	Point textOrg2(10, 320);
-	Point textOrg3(10, 340);
-	Point textOrg4(10, 360);
-	Point textOrg5(10, 380);
-	Point textOrg6(10, 400);
+	Point textOrg1(10, 320);
+	Point textOrg2(10, 340);
+	Point textOrg3(10, 360);
+	Point textOrg4(10, 380);
+	Point textOrg5(10, 400);
+	Point textOrg6(10, 420);
+	Point textOrg7(10, 440);
 
 	const int fontFace = CV_FONT_HERSHEY_SIMPLEX;
 	const double fontScale = 0.5; 
 	const int thickness = 1;
 	
 	putText(img_input, os_webfps.str(), textOrg1, fontFace, fontScale, Scalar::all(255), thickness, 8);
-	//putText(img_input, os_cc_stats.str(), textOrg2, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	//putText(img_input, realtime_decting.str(), textOrg2, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(img_input, os_id1.str(), textOrg3, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(img_input, os_id2.str(), textOrg4, fontFace, fontScale, Scalar::all(255), thickness, 8);
-	putText(img_input, os_yaxb.str(), textOrg5, fontFace, fontScale, Scalar::all(255), thickness, 8);
-	putText(img_input, os_ya2b2.str(), textOrg6, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_ball.str(), textOrg5, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_yaxb.str(), textOrg6, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(img_input, os_ya2b2.str(), textOrg7, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	
 	os_webfps.str("");
-	//os_cc_stats.str("");
+	//realtime_decting.str("");
 	os_id1.str("");
 	os_id2.str("");
 	os_yaxb.str("");
 	os_ya2b2.str("");
+	os_ball.str("");
 }
 
 void VisionSystem::VisionStart()
@@ -207,8 +223,7 @@ void VisionSystem::VisionStart()
 		os_webfps << "Webcam fps : " << fps;
 
 		Mat img_input, img_hsv;
-		Mat img_binary_team, img_binary_id1, img_binary_id2;
-		Mat frame;
+		Mat img_binary_team, img_binary_id1, img_binary_id2, img_binary_ball;
 
 		// Get image from Cam
 		if (!cap.read(img_input))
@@ -216,9 +231,6 @@ void VisionSystem::VisionStart()
 			cout << "Can not find web camm...\n";
 			break;
 		}
-
-		// Save frame
-		cap >> frame;
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
@@ -233,6 +245,9 @@ void VisionSystem::VisionStart()
 		// id2 color
 		inRange(img_hsv, Scalar(id2.LowH, id2.LowS, id2.LowV),
 			Scalar(id2.HighH, id2.HighS, id2.HighV), img_binary_id2);
+		// ball color
+		inRange(img_hsv, Scalar(ball.LowH, ball.LowS, ball.LowV),
+			Scalar(ball.HighH, ball.HighS, ball.HighV), img_binary_ball);
 
 		// morphological opening - remove small dot ..
 		erode(img_binary_team, img_binary_team, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -241,6 +256,8 @@ void VisionSystem::VisionStart()
 		dilate(img_binary_id1, img_binary_id1, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 		erode(img_binary_id2, img_binary_id2, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 		dilate(img_binary_id2, img_binary_id2, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		erode(img_binary_ball, img_binary_ball, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		dilate(img_binary_ball, img_binary_ball, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
 		// morphological closing - put dot ..
 		dilate(img_binary_team, img_binary_team, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -249,21 +266,28 @@ void VisionSystem::VisionStart()
 		erode(img_binary_id1, img_binary_id1, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 		dilate(img_binary_id2, img_binary_id2, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 		erode(img_binary_id2, img_binary_id2, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
+		dilate(img_binary_ball, img_binary_ball, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		erode(img_binary_ball, img_binary_ball, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+		
 		// labeling img 
 		Mat img_labels, centroids;
-		Mat team_stats, id1_stats, id2_stats;
+		Mat team_stats, id1_stats, id2_stats, ball_stats;
 		team.numOfLables = connectedComponentsWithStats(img_binary_team, img_labels,
 			team_stats, centroids, 8, CV_32S);
 		id1.numOfLables = connectedComponentsWithStats(img_binary_id1, img_labels,
 			id1_stats, centroids, 8, CV_32S);
 		id2.numOfLables = connectedComponentsWithStats(img_binary_id2, img_labels,
 			id2_stats, centroids, 8, CV_32S);
+		ball.numOfLables = connectedComponentsWithStats(img_binary_ball, img_labels,
+			ball_stats, centroids, 8, CV_32S);
 
 		// Draw Area box
 		drawAreaBox(img_input, team_stats, team.numOfLables, "team");
 		drawAreaBox(img_input, id1_stats, id1.numOfLables, "id1");
 		drawAreaBox(img_input, id2_stats, id2.numOfLables, "id2");
+		drawAreaBox(img_input, ball_stats, ball.numOfLables, "ball");
+		
+		// Calculate !
 		calculateTheLine(img_input ,x_one, y_one, x_two, y_two);
 		
 		// Draw Text on Frame
@@ -287,7 +311,7 @@ int main()
 		return -1;
 	}
 	vs.SetRobotColors();
-	vs.SetUI("Team, ID1, ID2", &team, &id1, &id2);
+	vs.SetUI("[Setup] Team, ID1, ID2, Ball", &team, &id1, &id2, &ball);
 	vs.VisionStart();
 	return 0;
 }
