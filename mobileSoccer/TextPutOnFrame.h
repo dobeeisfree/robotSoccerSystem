@@ -21,7 +21,7 @@ class TextPutOnFrame
 {
 public:
 	str_stream os_webfps;
-	//ostringstream realtime_decting;
+	//str_stream realtime_decting;
 	str_stream os_id1;
 	str_stream os_id2;
 	str_stream os_yaxb;
@@ -35,4 +35,3 @@ public:
 	void setTextPosition(int x, int y);
 	void onFrame(Mat& img_input);
 };
-
