@@ -115,7 +115,14 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 		y_ball = round((double)(top + (double)(height / 2)));
 	}
 
-	rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
+	if (strcmp(title, "ball") == 0)
+	{
+		rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 255, 255), 1);
+	}
+	else
+	{
+		rectangle(img_input, Point(left, top), Point(left + width, top + height), Scalar(0, 0, 255), 1);
+	}
 }
 
 void VisionSystem::drawLine(Mat& img_input, double x1, double y1, double x2, double y2)
