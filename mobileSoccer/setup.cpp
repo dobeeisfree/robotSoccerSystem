@@ -74,7 +74,7 @@ void setup::SetRobotColors()
 	id2.SetV(47, 255);
 
 	// ball color
-	ball.SetH(91, 92);
-	ball.SetS(236, 238);
-	ball.SetV(47, 255);
+	ball.SetH(44, 75);
+	ball.SetS(100, 255);
+	ball.SetV(49, 255);
 }
