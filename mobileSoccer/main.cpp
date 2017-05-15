@@ -5,7 +5,7 @@ VisionSystem::VisionSystem()
 	ver1.SetVideoSize(640, 480);
 	ver1.SetRobotColors();
 	ver1.SetUI("[Setup] Team, ID1, ID2, Ball", &ver1.team, &ver1.id1, &ver1.id2, &ver1.ball);
-	cout << "VisionSystem version 2017.05.15 04:48PM \n";
+	cout << "VisionSystem version 2017.05.15 7:15PM \n";
 }
 
 VisionSystem::~VisionSystem()
@@ -119,7 +119,7 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 {
 	makeLine(x1, y1, x2, y2);
 	findCenterPoint(x1, y1, x2, y2);
-	makeTheta(x1, y1, x2, y2);
+	makeTheta();
 	rtnRobotsDirection(x1, y1);
 	drawLine(img_input, x1, y1, x2, y2);
 }
