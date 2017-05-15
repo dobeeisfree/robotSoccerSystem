@@ -5,7 +5,7 @@ VisionSystem::VisionSystem()
 	ver1.SetVideoSize(640, 480);
 	ver1.SetRobotColors();
 	ver1.SetUI("[Setup] Team, ID1, ID2, Ball", &ver1.team, &ver1.id1, &ver1.id2, &ver1.ball);
-	cout << "VisionSystem 2017.05.11 \n";
+	cout << "VisionSystem version 2017.05.15 04:48PM \n";
 }
 
 VisionSystem::~VisionSystem()
@@ -29,6 +29,7 @@ void VisionSystem::centerPoint(char * title, int left, int top, int width, int h
 		x_ball = round((double)(left + (double)(width / 2)));
 		y_ball = round((double)(top + (double)(height / 2)));
 	}
+	else return;
 }
 
 void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title)
