@@ -88,7 +88,7 @@ void VisionSystem::findCenterPoint(double x1, double y1, double x2, double y2)
 	Cy = (y1 + y2) / 2; //find robot's center point
 }
 
-void VisionSystem::makeTheta(double x1, double y1, double x2, double y2)
+void VisionSystem::makeTheta()
 {
 	//theta = atan((y1 - y2) / (x1 - x2)) - (3.1415f / 4);
 	theta = (CV_PI / 4);

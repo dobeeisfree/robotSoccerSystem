@@ -32,7 +32,7 @@ public:
 	void calculateTheLine(Mat& img_input, double x1, double y1, double x2, double y2);
 	void makeLine(double x1, double y1, double x2, double y2);
 	void findCenterPoint(double x1, double y1, double x2, double y2);
-	void makeTheta(double x1, double y1, double x2, double y2);
+	void makeTheta();
 	void rtnRobotsDirection(double x, double y);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
