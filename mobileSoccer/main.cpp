@@ -12,6 +12,19 @@ VisionSystem::~VisionSystem()
 {
 }
 
+void VisionSystem::setFourSides()
+{
+	// N사분면 정의
+	n1._x = 320 + 60;
+	n1._y = 120;
+	n2._x = 160;
+	n2._y = 120;
+	n3._x = 160;
+	n3._y = 240 + 120;
+	n4._x = 320 + 60;
+	n4._y = 240 + 120;
+}
+
 void VisionSystem::centerPoint(char * title, int left, int top, int width, int height)
 {
 	if (strcmp(title, "id1") == 0)
@@ -163,6 +176,8 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
+		// set 4 side : N사분면 x, y 설정
+		setFourSides();
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);

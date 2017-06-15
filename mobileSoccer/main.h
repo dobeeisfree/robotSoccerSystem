@@ -18,6 +18,13 @@ namespace mobileCalculate {
 	double x_ball, y_ball;
 }
 
+typedef struct _Pos{
+	int _x;
+	int _y;
+} Pos;
+
+Pos n1, n2, n3, n4; // N 사분면 정의를 위한 변수
+
 using namespace mobileCalculate;
 
 class VisionSystem
@@ -27,6 +34,7 @@ public:
 	~VisionSystem();
 	
 	void start();
+	void setFourSides();
 	void centerPoint(char * title, int left, int top, int width, int height);
 	void drawAreaBox(Mat img_input, Mat stats, int numOfLables, char * title);
 	void calculateTheLine(Mat& img_input, double x1, double y1, double x2, double y2);
