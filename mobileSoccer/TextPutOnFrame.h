@@ -27,6 +27,7 @@ public:
 	str_stream os_yaxb;
 	str_stream os_ya2b2;
 	str_stream os_ball;
+	str_stream os_angle;
 
 	TextPutOnFrame();
 	~TextPutOnFrame();

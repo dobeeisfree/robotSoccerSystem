@@ -114,6 +114,15 @@ void VisionSystem::rtnRobotsDirection(double x, double y)
 	ver1.putstring.os_ya2b2.name << "direction line: " << "y = " << a2 << "x + " << b2;
 }
 
+int VisionSystem::angle(float x1, float y1, float x2, float y2)
+{
+	float angle = atan2(y2 - y1, x2 - x1) * 180 / 3.1415;
+	if (0 < -angle - 45 && -angle - 45 < 180)
+	{
+		return -angle - 45;
+	}
+	else return 360 - angle - 45;
+}
 
 void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double x2, double y2)
 {
@@ -121,6 +130,7 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 	findCenterPoint(x1, y1, x2, y2);
 	makeTheta();
 	rtnRobotsDirection(x1, y1);
+	ver1.putstring.os_angle.name << "angle: " << angle(x1, y1, x2, y2);
 	drawLine(img_input, x1, y1, x2, y2);
 }
 
