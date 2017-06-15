@@ -188,6 +188,7 @@ void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int des
 	robot_vl = 100; // dummy test
 }
 
+
 void VisionSystem::start()
 {
 	while (true)
@@ -235,6 +236,28 @@ void VisionSystem::start()
 			break;
 		}
 		
+
+		// -------------------- 블루투스 시리얼 통신 -------------------- //
+		if (!serialComm.connect("COM25")) //COM25번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
+		{
+			cout << "connect faliled" << endl;
+			return;
+		}
+		else cout << "connect successed" << endl;
+
+		while (1) { 
+			//오픈에 성공한 경우 sendCommand()를 통해 계속적으로 데이터를 전송한다.
+			//전송에 실패 할 경우 failed 메시지를 출력한다.
+			cin >> buffer;
+
+			if (!serialComm.sendCommand(buffer))
+			{
+				cout << "send command failed" << endl;
+			}
+			else cout << "send Command success" << endl;
+		}
+		// -------------------- 블루투스 시리얼 통신 -------------------- //
+
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
@@ -301,7 +324,10 @@ void VisionSystem::start()
 		imshow("Origin IMAGE", img_input);
 
 		// Exit to ESC key
-		if (waitKey(1) == 27) break;
+		if (waitKey(1) == 27) {
+			serialComm.disconnect(); //작업이 끝나면 포트를 닫는다
+			break;
+		}
 	}
 }
 
