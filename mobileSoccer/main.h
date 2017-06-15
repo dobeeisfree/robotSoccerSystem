@@ -34,7 +34,7 @@ public:
 	void findCenterPoint(double x1, double y1, double x2, double y2);
 	void makeTheta();
 	void rtnRobotsDirection(double x, double y);
-	int VisionSystem::angle(float x1, float y1, float x2, float y2);
+	int angle(float x1, float y1, float x2, float y2);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
 };
