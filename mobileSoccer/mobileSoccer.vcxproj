@@ -151,6 +151,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="SerialComm.cpp" />
+    <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="setup.cpp" />
     <ClCompile Include="TextPutOnFrame.cpp" />
   </ItemGroup>
@@ -158,6 +160,8 @@
     <ClInclude Include="gui_text.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="SerialComm.h" />
+    <ClInclude Include="SerialPort.h" />
     <ClInclude Include="setup.h" />
     <ClInclude Include="TextPutOnFrame.h" />
   </ItemGroup>
