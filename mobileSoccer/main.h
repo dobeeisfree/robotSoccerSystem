@@ -43,6 +43,7 @@ public:
 	void makeTheta();
 	void rtnRobotsDirection(double x, double y);
 	int angle(float x1, float y1, float x2, float y2);
+	void whereisrobot(int x, int y);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
 };

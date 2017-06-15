@@ -18,6 +18,7 @@ void TextPutOnFrame::clearAll()
 	os_ya2b2.name.str("");
 	os_ball.name.str("");
 	os_angle.name.str("");
+	os_place.name.str("");
 }
 
 void TextPutOnFrame::setTextPosition(int x, int y)
@@ -36,6 +37,8 @@ void TextPutOnFrame::setTextPosition(int x, int y)
 	os_ya2b2.textOrg.y = y + 120;
 	os_angle.textOrg.x = x;
 	os_angle.textOrg.y = y + 140;
+	os_place.textOrg.x = x;
+	os_place.textOrg.y = y + 160;
 }
 
 void TextPutOnFrame::onFrame(Mat& frame)

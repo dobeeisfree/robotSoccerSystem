@@ -152,11 +152,28 @@ void VisionSystem::drawText(Mat& img_input)
 	ver1.putstring.os_id1.name << "id1 (" << x_id1 << ", " << y_id1 << ")";
 	ver1.putstring.os_id2.name << "id2 (" << x_id2 << ", " << y_id2 << ")";
 	ver1.putstring.os_ball.name << "ball (" << x_ball << ", " << y_ball << ")";
+	whereisrobot(Cx, Cy); // Show where is robot
 
 	// start (10, 320)
 	ver1.putstring.setTextPosition(10, 320);
 	ver1.putstring.onFrame(img_input);
 	ver1.putstring.clearAll();
+}
+
+void VisionSystem::whereisrobot(int x, int y)
+{
+	/* Find Robot' current position and assign N side: Place
+	@param x,y 로봇의 현재 중점좌표
+	*/
+	int place;
+
+	if (x>320 && y>240) place = 4;
+	else if (x <= 320 && y >240) place = 3;
+	else if (x > 320 && y <= 240) place = 1;
+	else if (x <= 320 && y <= 240) place = 2;
+	else place = 0; // 0이면 err. (경기장밖)
+
+	ver1.putstring.os_place.name << "N=" << place;
 }
 
 void VisionSystem::start()
@@ -176,8 +193,9 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
-		// set 4 side : N사분면 x, y 설정
-		setFourSides();
+
+		// User Input for N sides
+
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
@@ -256,6 +274,7 @@ int main()
 		cout << "Can not open Cam" << endl;
 		return -1;
 	}
+	vs.setFourSides(); // N side
 	vs.start();
 	return 0;
 }
