@@ -176,6 +176,18 @@ void VisionSystem::whereisrobot(int x, int y)
 	ver1.putstring.os_place.name << "N=" << place;
 }
 
+void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle)
+{
+	/*
+	@param robotCx, robotCy 로봇의 중점좌표
+	@param desired_x, int desired_y 목표 위치
+	@param whichAngle 회전 각도
+	*/
+	// calculating... here code..
+	robot_vr = 50; // dummy test
+	robot_vl = 100; // dummy test
+}
+
 void VisionSystem::start()
 {
 	while (true)
@@ -195,7 +207,34 @@ void VisionSystem::start()
 		}
 
 		// User Input for N sides
-
+		int res = NULL;
+		while (res != 1)
+		{
+			cout << "Input Number 1 ~ 4, For Robot Move \n";
+			int res = scanf("%d", &whichPlace);
+			if (res == 0) // 성공하지 못한 입력.. 
+			{
+				cout << "Try agin \n";
+			}
+		}
+		
+		// Call autoPosition for calculate angle, position
+		// send robot vr, vl
+		switch (whichPlace) {
+		case 1:
+			autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
+			break;
+		case 2:
+			autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
+			break;
+		case 3:
+			autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
+			break;
+		case 4:
+			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
+			break;
+		}
+		
 
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);

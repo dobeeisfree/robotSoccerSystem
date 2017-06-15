@@ -24,6 +24,8 @@ typedef struct _Pos{
 } Pos;
 
 Pos n1, n2, n3, n4; // N 사분면 정의를 위한 변수
+int whichPlace, whichAngle; // 사용자 입력을 위한 변수
+int robot_vr, robot_vl; // 로봇의 왼쪽, 오른쪽 바퀴 for PWM
 
 using namespace mobileCalculate;
 
@@ -44,6 +46,7 @@ public:
 	void rtnRobotsDirection(double x, double y);
 	int angle(float x1, float y1, float x2, float y2);
 	void whereisrobot(int x, int y);
+	void autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
 };
