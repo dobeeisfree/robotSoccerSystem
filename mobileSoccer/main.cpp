@@ -206,35 +206,6 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
-
-		// User Input for N sides
-		int res = NULL;
-		while (res != 1)
-		{
-			cout << "Input Number 1 ~ 4, For Robot Move \n";
-			int res = scanf("%d", &whichPlace);
-			if (res == 0) // 성공하지 못한 입력.. 
-			{
-				cout << "Try agin \n";
-			}
-		}
-		
-		// Call autoPosition for calculate angle, position
-		// send robot vr, vl
-		switch (whichPlace) {
-		case 1:
-			autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
-			break;
-		case 2:
-			autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
-			break;
-		case 3:
-			autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
-			break;
-		case 4:
-			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
-			break;
-		}
 		
 
 		// -------------------- 블루투스 시리얼 통신 -------------------- //
@@ -322,6 +293,35 @@ void VisionSystem::start()
 		
 		//imshow("binary image", team.img_binary);
 		imshow("Origin IMAGE", img_input);
+
+		// User Input for N sides
+		int res = NULL;
+		while (res != 1)
+		{
+			cout << "Input Number 1 ~ 4, For Robot Move \n";
+			int res = scanf("%d", &whichPlace);
+			if (res == 0) // 성공하지 못한 입력.. 
+			{
+				cout << "Try agin \n";
+			}
+		}
+
+		// Call autoPosition for calculate angle, position
+		// send robot vr, vl
+		switch (whichPlace) {
+		case 1:
+			autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
+			break;
+		case 2:
+			autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
+			break;
+		case 3:
+			autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
+			break;
+		case 4:
+			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
+			break;
+		}
 
 		// Exit to ESC key
 		if (waitKey(1) == 27) {
