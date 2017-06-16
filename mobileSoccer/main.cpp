@@ -5,7 +5,7 @@ VisionSystem::VisionSystem()
 	ver1.SetVideoSize(640, 480);
 	ver1.SetRobotColors();
 	ver1.SetUI("[Setup] Team, ID1, ID2, Ball", &ver1.team, &ver1.id1, &ver1.id2, &ver1.ball);
-	cout << "VisionSystem version 2017.05.15 7:15PM \n";
+	cout << "VisionSystem version 2017.06.17 2:24AM \n";
 }
 
 VisionSystem::~VisionSystem()
@@ -207,29 +207,6 @@ void VisionSystem::start()
 			break;
 		}
 		
-
-		// -------------------- 블루투스 시리얼 통신 -------------------- //
-		if (!serialComm.connect("COM25")) //COM25번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
-		{
-			cout << "connect faliled" << endl;
-			return;
-		}
-		else cout << "connect successed" << endl;
-
-		while (1) { 
-			//오픈에 성공한 경우 sendCommand()를 통해 계속적으로 데이터를 전송한다.
-			//전송에 실패 할 경우 failed 메시지를 출력한다.
-			cin >> buffer;
-
-			if (!serialComm.sendCommand(buffer))
-			{
-				cout << "send command failed" << endl;
-			}
-			else cout << "send Command success" << endl;
-		}
-		// -------------------- 블루투스 시리얼 통신 -------------------- //
-
-
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
 
@@ -322,7 +299,7 @@ void VisionSystem::start()
 			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
 			break;
 		}
-
+		
 		// Exit to ESC key
 		if (waitKey(1) == 27) {
 			serialComm.disconnect(); //작업이 끝나면 포트를 닫는다
@@ -334,12 +311,30 @@ void VisionSystem::start()
 int main()
 {
 	VisionSystem vs = VisionSystem();
-	if (!ver1.cap.isOpened())
+	/*if (!ver1.cap.isOpened())
 	{
 		cout << "Can not open Cam" << endl;
 		return -1;
+	}*/
+	if (!serialComm.connect("COM7")) //COM7번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
+	{
+		cout << "connect faliled" << endl;
 	}
-	vs.setFourSides(); // N side
-	vs.start();
+	else {
+		cout << "connect successed" << endl;
+		while (true) {
+			cout << "전송할 (1:left, 2:right, 3:Stop, 4:Forward, 5: Back)를 입력하세요 : ";
+			cin >> buffer;
+
+			if (!serialComm.sendCommand(buffer))
+			{
+				cout << "send command failed" << endl;
+			}
+			else cout << "send Command success" << endl;
+			buffer = '\0';
+		}
+	}
+	//vs.setFourSides(); // N side
+	//vs.start();
 	return 0;
 }
