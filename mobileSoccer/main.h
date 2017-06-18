@@ -45,6 +45,23 @@ bool bluetooth = false; // 블루투스 연결 여부
 bool destinated = false; // 도착했는지의 여부
 bool ans = false; // 답에 충실 했으면의 여부
 
+typedef struct vel {
+	// default constructor
+	vel() : vr(0), vl(0),
+			isRobotAngleCall(false),
+			isPositionCall(false),
+			isPositionAngleCall(false),
+			isRobotOutOfBound(false) { }
+	int vr; // 오른쪽 바퀴
+	int vl; // 왼쪽 바퀴
+	bool isRobotAngleCall; // RobotAngle 함수 불렀는지의 여부
+	bool isPositionCall; // Position 함수 불렀는지의 여부
+	bool isRobotOutOfBound; // 경기장 밖인가의 여부
+	bool isPositionAngleCall = false; // Position_Angle 호출 여부
+} Vel;
+
+Vel realtimeCheck; // 실시간 비전처리를 위함
+
 // 경기장 사이즈
 int width = 1024;
 int height = 1278; //temporary value
@@ -74,6 +91,7 @@ public:
 	void Position(Robot *robot, double x, double y);
 	void Position_Angle(Robot *robot, double x, double y, int desired_angle);
 	void calculatingSize(double x, double y); // 경기장 사이즈 변환
+	void nSideToPosition(int whichPlace); // 포지션 함수 호출
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
 	void xyMode();
