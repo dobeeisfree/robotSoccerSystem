@@ -21,6 +21,7 @@ class TextPutOnFrame
 {
 public:
 	str_stream os_webfps;
+	str_stream os_cxcy;
 	//str_stream realtime_decting;
 	str_stream os_id1;
 	str_stream os_id2;

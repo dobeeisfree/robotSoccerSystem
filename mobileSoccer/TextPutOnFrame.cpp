@@ -11,6 +11,7 @@ TextPutOnFrame::~TextPutOnFrame()
 void TextPutOnFrame::clearAll()
 {
 	os_webfps.name.str("");
+	os_cxcy.name.str("");
 	//realtime_decting.str("");
 	os_id1.name.str("");
 	os_id2.name.str("");
@@ -39,6 +40,8 @@ void TextPutOnFrame::setTextPosition(int x, int y)
 	os_angle.textOrg.y = y + 100;
 	os_place.textOrg.x = x;
 	os_place.textOrg.y = y + 120;
+	os_cxcy.textOrg.x = x;
+	os_cxcy.textOrg.y = y + 140;
 }
 
 void TextPutOnFrame::onFrame(Mat& frame)
@@ -56,4 +59,5 @@ void TextPutOnFrame::onFrame(Mat& frame)
 	//putText(frame, os_ya2b2.name.str(), os_ya2b2.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_angle.name.str(), os_angle.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_place.name.str(), os_place.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(frame, os_cxcy.name.str(), os_cxcy.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 }
