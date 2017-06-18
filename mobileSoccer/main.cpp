@@ -101,13 +101,6 @@ void VisionSystem::findCenterPoint(double x1, double y1, double x2, double y2)
 	Cy = (y1 + y2) / 2; //find robot's center point
 }
 
-void VisionSystem::makeTheta()
-{
-	//theta = atan((y1 - y2) / (x1 - x2)) - (3.1415f / 4);
-	theta = (CV_PI / 4);
-	//theta = 20;
-}
-
 void VisionSystem::rtnRobotsDirection(double x, double y)
 {
 	//회전식: 
@@ -290,7 +283,6 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 {
 	makeLine(x1, y1, x2, y2);
 	findCenterPoint(x1, y1, x2, y2);
-	makeTheta();
 	rtnRobotsDirection(x1, y1);
 	ver1.putstring.os_angle.name << "angle: " << angle(x1, y1, x2, y2);
 	drawLine(img_input, x1, y1, x2, y2);
@@ -481,7 +473,7 @@ void VisionSystem::start()
 			break;
 		}
 		
-		if ((char)waitKey(30) == ' ') {
+		if ((char)waitKey(30) == ' ') { // space bar 눌렀을 때
 			cout << "로봇 모드 진입, 블루투스 확인 중 \n";
 			bluetooth = serialComm.connect("COM7");
 
