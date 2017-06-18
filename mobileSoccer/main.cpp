@@ -5,7 +5,7 @@ VisionSystem::VisionSystem()
 	ver1.SetVideoSize(640, 480);
 	ver1.SetRobotColors();
 	ver1.SetUI("[Setup] Team, ID1, ID2, Ball", &ver1.team, &ver1.id1, &ver1.id2, &ver1.ball);
-	cout << "VisionSystem version 2017.05.15 7:15PM \n";
+	cout << "VisionSystem version 2017.06.17 2:24AM \n";
 }
 
 VisionSystem::~VisionSystem()
@@ -188,6 +188,7 @@ void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int des
 	robot_vl = 100; // dummy test
 }
 
+
 void VisionSystem::start()
 {
 	while (true)
@@ -205,37 +206,7 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
-
-		// User Input for N sides
-		int res = NULL;
-		while (res != 1)
-		{
-			cout << "Input Number 1 ~ 4, For Robot Move \n";
-			int res = scanf("%d", &whichPlace);
-			if (res == 0) // 성공하지 못한 입력.. 
-			{
-				cout << "Try agin \n";
-			}
-		}
 		
-		// Call autoPosition for calculate angle, position
-		// send robot vr, vl
-		switch (whichPlace) {
-		case 1:
-			autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
-			break;
-		case 2:
-			autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
-			break;
-		case 3:
-			autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
-			break;
-		case 4:
-			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
-			break;
-		}
-		
-
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
 
@@ -300,20 +271,70 @@ void VisionSystem::start()
 		//imshow("binary image", team.img_binary);
 		imshow("Origin IMAGE", img_input);
 
+		// User Input for N sides
+		int res = NULL;
+		while (res != 1)
+		{
+			cout << "Input Number 1 ~ 4, For Robot Move \n";
+			int res = scanf("%d", &whichPlace);
+			if (res == 0) // 성공하지 못한 입력.. 
+			{
+				cout << "Try agin \n";
+			}
+		}
+
+		// Call autoPosition for calculate angle, position
+		// send robot vr, vl
+		switch (whichPlace) {
+		case 1:
+			autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
+			break;
+		case 2:
+			autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
+			break;
+		case 3:
+			autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
+			break;
+		case 4:
+			autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
+			break;
+		}
+		
 		// Exit to ESC key
-		if (waitKey(1) == 27) break;
+		if (waitKey(1) == 27) {
+			serialComm.disconnect(); //작업이 끝나면 포트를 닫는다
+			break;
+		}
 	}
 }
 
 int main()
 {
 	VisionSystem vs = VisionSystem();
-	if (!ver1.cap.isOpened())
+	/*if (!ver1.cap.isOpened())
 	{
 		cout << "Can not open Cam" << endl;
 		return -1;
+	}*/
+	if (!serialComm.connect("COM7")) //COM7번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
+	{
+		cout << "connect faliled" << endl;
 	}
-	vs.setFourSides(); // N side
-	vs.start();
+	else {
+		cout << "connect successed" << endl;
+		while (true) {
+			cout << "전송할 (1:left, 2:right, 3:Stop, 4:Forward, 5: Back)를 입력하세요 : ";
+			cin >> buffer;
+
+			if (!serialComm.sendCommand(buffer))
+			{
+				cout << "send command failed" << endl;
+			}
+			else cout << "send Command success" << endl;
+			buffer = '\0';
+		}
+	}
+	//vs.setFourSides(); // N side
+	//vs.start();
 	return 0;
 }

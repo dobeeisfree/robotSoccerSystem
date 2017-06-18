@@ -5,6 +5,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
+#include "serialcomm.h"
 #define CAP_NUMBER 0						// Set WebCam Number
 
 using namespace cv;

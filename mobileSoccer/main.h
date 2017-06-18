@@ -29,6 +29,9 @@ int robot_vr, robot_vl; // ·Îº¿ÀÇ ¿ÞÂÊ, ¿À¸¥ÂÊ ¹ÙÄû for PWM
 
 using namespace mobileCalculate;
 
+char buffer;
+CSerialComm serialComm; //SerialComm °´Ã¼ »ý¼º
+
 class VisionSystem
 {
 public:
@@ -46,6 +49,7 @@ public:
 	void rtnRobotsDirection(double x, double y);
 	int angle(float x1, float y1, float x2, float y2);
 	void whereisrobot(int x, int y);
+	//void blueTooth();
 	void autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
