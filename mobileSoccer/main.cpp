@@ -334,8 +334,60 @@ void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int des
 	robot_vr = 50; // dummy test
 	robot_vl = 100; // dummy test
 }
+void VisionSystem::xyMode()
+{
+	int x, y, angle;
+	while (1) {
+		//xy mode의 x,y position과 angle 입력받기
+		cout << "Input X, Y Position AND Angle, For Robot Move \n";
+		x = scanf("%d", &xyMode_x);
+		y = scanf("%d", &xyMode_y);
+		angle = scanf("%d", &xyMode_angle);
 
+		//x, y, angle 범위 처리(경기장 크기와 각도 제한)
+		if ((x < 0 || x>320) && (y < 0 || y>240) && (angle<0 || angle>360)) {
+			cout << "Out Of Range \n";
+		} else {
+			break;
+		}
+	}
+	autoPosition(Cx, Cy, x, y, angle);
+}
+void VisionSystem::NPlaceMode()
+{
+	// User Input for N sides
+	int res = NULL;
+	while (res != 1)
+	{
+		cout << "Input Number 1 ~ 4, For Robot Move \n";
+		int res = scanf("%d", &whichPlace);
+		if (res != 1 || res != 2 || res != 3 || res != 4) // 성공하지 못한 입력
+		{
+			cout << "Try agin \n";
+		}
+	}
 
+<<<<<<< HEAD
+	// Call autoPosition for calculate angle, position
+	// send robot vr, vl
+	switch (whichPlace) {
+	case 1:
+		autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
+		break;
+	case 2:
+		autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
+		break;
+	case 3:
+		autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
+		break;
+	case 4:
+		autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
+		break;
+	}
+}
+=======
+
+>>>>>>> eab81dc62340e7fc42b962dc7fd6730120a70a99
 void VisionSystem::start()
 {
 	while (true)
@@ -353,7 +405,20 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
+<<<<<<< HEAD
+
+		cout << "Choice Mode (XY Mode:1 or N Place Mode:2) \n";
+		int mode = scanf("%d", &mode);
+		if (mode == 1) {
+			xyMode();				
+		}
+		else if (mode == 2) {
+			NPlaceMode();
+		}
+
+=======
 		
+>>>>>>> eab81dc62340e7fc42b962dc7fd6730120a70a99
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
 
