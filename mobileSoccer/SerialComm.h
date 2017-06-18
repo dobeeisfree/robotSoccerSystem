@@ -12,6 +12,6 @@ public:
 
 	CSerialPort	serial;
 	int		connect(char* _portNum);
-	int		sendCommand(char pos);
+	int		sendCommand(char* pos);
 	void		disconnect();
 };

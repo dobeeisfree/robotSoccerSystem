@@ -141,6 +141,16 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 {
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
+	string send = to_string(vl) + "/" + to_string(vr);
+	vector<char> writable(send.begin(), send.end());
+	writable.push_back('\0');
+	char* ptr = &writable[0];
+	
+	if (!serialComm.sendCommand(ptr))
+	{
+		cout << "send command failed" << endl;
+	}
+	else cout << "send Command success" << endl;
 }
 
 void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
@@ -414,6 +424,7 @@ void VisionSystem::start()
 			cout << "종료합니다 \n";
 			break;
 		}
+		
 		if ((char)waitKey(30) == ' ') {
 			cout << "로봇 모드 진입 \n";
 			cout << "블루투스 연결 중 ... \n";
@@ -422,18 +433,21 @@ void VisionSystem::start()
 			{
 				cout << "connect faliled" << endl;
 			}
-			else {
+			else 
+			{
 				cout << "connect successed" << endl;
-				while (true) {
+				while (true) 
+				{
 					cout << "전송할 (1:left, 2:right, 3:Stop, 4:Forward, 5: Back)를 입력하세요 : ";
 					cin >> buffer;
-
 					if (!serialComm.sendCommand(buffer))
 					{
 						cout << "send command failed" << endl;
 					}
 					else cout << "send Command success" << endl;
 					buffer = '\0';
+
+					if (waitKey(1) == 27) return;
 				}
 			}
 

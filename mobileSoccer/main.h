@@ -29,7 +29,7 @@ int robot_vr, robot_vl; // 로봇의 왼쪽, 오른쪽 바퀴 for PWM
 
 using namespace mobileCalculate;
 
-char buffer;
+char *buffer;
 CSerialComm serialComm; //SerialComm 객체 생성
 						
 //로봇구조체 선언부

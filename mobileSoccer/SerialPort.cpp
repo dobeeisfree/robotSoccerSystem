@@ -93,11 +93,10 @@ bool CSerialPort::SetCommunicationTimeouts(DWORD ReadIntervalTimeout,
 	return true;
 }
 
-bool CSerialPort::WriteByte(char bybyte)
+bool CSerialPort::WriteByte(char *bybyte)
 {
 	//iBytesWritten=0;
 	m_iBytesWritten = 0;
-	cout << bybyte << endl;
 
 	if (WriteFile(m_hComm, &bybyte, 1, &m_iBytesWritten, NULL) == 0) //입력받은 값을 WriteFile을 통해 포트로 전송한다.
 		return false;
