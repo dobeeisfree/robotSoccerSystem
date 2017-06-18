@@ -119,6 +119,11 @@ void Position( Robot *robot, double x, double y )
 		destinated = true;
 		Velocity(robot, 0, 0);
 	}// txt로 짰던 코드예외부분
+	else if (robot._x >= width - 30 || robot._y >= height - 30)
+	{
+		Velocity(robot, 0, 0);//일단멈춤
+		//그 이후 어케할지는 알아서 생각 (흑흑)
+	}
 	else
 	{
 		Velocity(robot, vl, vr);//아두이노로 보내는함수!
