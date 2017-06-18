@@ -141,11 +141,11 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 {
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
-	string send = to_string(vl) + "/" + to_string(vr);
+	string send = to_string((double)vl/(double)25.5) + "/" + to_string((double)vr/(double)25.5);
 	vector<char> writable(send.begin(), send.end());
 	writable.push_back('\0');
 	char* ptr = &writable[0];
-	
+	cout << "Send Value : " << ptr << "\n";
 	if (!serialComm.sendCommand(ptr))
 	{
 		cout << "send command failed" << endl;
@@ -253,11 +253,13 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 	}// txt로 짰던 코드예외부분
 	else if (robot->_x >= width - 30 || robot->_y >= height - 30)
 	{
+		cout << "ok Velocity() Call\n";
 		Velocity(robot, 0, 0);//일단멈춤
 							  //그 이후 어케할지는 알아서 생각 (흑흑)
 	}
 	else
 	{
+		cout << "ok Velocity() Call\n";
 		Velocity(robot, vl, vr);//아두이노로 보내는함수!
 	}
 
@@ -296,6 +298,8 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 	r1._angle = angle(x1, y1, x2, y2); // 로봇의 앵글값 저장
 	r1._x = Cx; // 로봇의 중심 x
 	r1._y = Cy; // 로봇의 중심 y
+
+	ver1.putstring.os_cxcy.name << "Robot: (" << Cx << ", " << Cy << ")";
 }
 
 void VisionSystem::drawText(Mat& img_input)
@@ -327,26 +331,15 @@ void VisionSystem::whereisrobot(int x, int y)
 	ver1.putstring.os_place.name << "N=" << place;
 }
 
-void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle)
-{
-	/*
-	@param robotCx, robotCy 로봇의 중점좌표
-	@param desired_x, int desired_y 목표 위치
-	@param whichAngle 회전 각도
-	*/
-	// calculating... here code..
-	robot_vr = 50; // dummy test
-	robot_vl = 100; // dummy test
-}
 void VisionSystem::xyMode()
 {
 	int x, y, angle;
 	int res = NULL;
 
-	while (res != 1)
+	while (res != 3)
 	{
 		// xy mode의 x, y position과 angle 입력받기
-		cout << "Input X, Y Position AND Angle, For Robot Move \n";
+		cout << "Input X, Y Position AND Angle, For Robot Move : ";
 		res = scanf("x:%d, y:%d, angle:%d", &xyMode_x, &xyMode_y, &xyMode_angle);
 
 		if (res == 3) { // 인자값이 3개가 되어야함
@@ -356,7 +349,11 @@ void VisionSystem::xyMode()
 				cout << "Out Of Range \n";
 				Velocity(&r1, 0, 0);
 			}
-			Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
+			else {
+				cout << "ok Position_Angle Call\n";
+				Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
+				return;
+			}
 		}
 	}
 }
@@ -366,28 +363,29 @@ void VisionSystem::NPlaceMode()
 	int res = NULL;
 	while (res != 1)
 	{
-		cout << "Input Number 1 ~ 4, For Robot Move \n";
+		cout << "Input Number 1 ~ 4, For Robot Move :";
 		int res = scanf("%d", &whichPlace);
 		if (res == 1) {
 			// 성공한 입력값이 하나이면서
 			// 그 값이 1~4 중에 하나이면
 			if (whichPlace == 1 || whichPlace == 2 || whichPlace == 3 || whichPlace == 4)
 			{
+				cout << "ok Position Call\n";
 				// Call autoPosition for calculate angle, position
 				// send robot vr, vl
 				switch (whichPlace) {
 				case 1:
 					Position(&r1, n1._x, n1._y);
-					break;
+					return;
 				case 2:
 					Position(&r1, n2._x, n2._y);
-					break;
+					return;
 				case 3:
 					Position(&r1, n3._x, n3._y);
-					break;
+					return;
 				case 4:
 					Position(&r1, n4._x, n4._y);
-					break;
+					return;
 				}
 			}
 		}
@@ -484,45 +482,37 @@ void VisionSystem::start()
 		}
 		
 		if ((char)waitKey(30) == ' ') {
-			cout << "로봇 모드 진입 \n";
-			cout << "블루투스 연결 중 ... \n";
+			cout << "로봇 모드 진입, 블루투스 확인 중 \n";
+			bluetooth = serialComm.connect("COM7");
 
-			if (!serialComm.connect("COM7")) //COM7번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
-			{
-				cout << "connect faliled" << endl;
-			}
-			else 
+			if (bluetooth)
 			{
 				cout << "connect successed" << endl;
 				int mode_res = 0;
 
-				while (true) 
+				while (mode_res != 1)
 				{
-					cout << "Choice Mode (XY Mode:1 or N Place Mode:2) \n";
-
+					cout << "Choice Mode (XY Mode:1 or N Place Mode:2) : ";
 					mode_res = scanf("%d", &mode);
+
 					if (mode_res == 1) {
 						// 정상 입력일 경우
-						if (mode == 1) {
-							xyMode();
-						}
-						else if (mode == 2) {
-							NPlaceMode();
+						switch (mode)
+						{
+							case 1:
+								xyMode();
+								break;
+							case 2:
+								NPlaceMode();
+								break;
+							default:
+								break;
 						}
 					}
-					/*
-					cout << "전송할 (1:left, 2:right, 3:Stop, 4:Forward, 5: Back)를 입력하세요 : ";
-					cin >> buffer;
-					if (!serialComm.sendCommand(buffer))
-					{
-						cout << "send command failed" << endl;
-					}
-					else cout << "send Command success" << endl;
-					buffer = '\0';
-					*/
 					if (waitKey(1) == 27) return;
 				}
 			}
+			else cout << "connect faliled" << endl; 
 		}
 	}
 }

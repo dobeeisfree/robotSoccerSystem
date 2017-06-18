@@ -42,7 +42,9 @@ typedef struct robot {
 } Robot;
 
 Robot r1; // 로봇
+bool bluetooth = false; // 블루투스 연결 여부
 bool destinated = false; // 도착했는지의 여부
+bool ans = false; // 답에 충실 했으면의 여부
 
 // 경기장 사이즈
 int width = 1024;
@@ -73,8 +75,7 @@ public:
 	void RobotAngle(Robot *robot, int desired_angle);
 	void Position(Robot *robot, double x, double y);
 	void Position_Angle(Robot *robot, double x, double y, int desired_angle);
-	void calculatingSize(double x, double y); // 경기장 사이즈 변환 
-	void autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle);
+	void calculatingSize(double x, double y); // 경기장 사이즈 변환
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
 	void xyMode();
