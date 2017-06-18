@@ -36,6 +36,12 @@
     <ClCompile Include="TextPutOnFrame.cpp">
       <Filter>소스 파일\utils</Filter>
     </ClCompile>
+    <ClCompile Include="SerialPort.cpp">
+      <Filter>소스 파일\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialComm.cpp">
+      <Filter>소스 파일\utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -51,6 +57,12 @@
       <Filter>헤더 파일\utils</Filter>
     </ClInclude>
     <ClInclude Include="TextPutOnFrame.h">
+      <Filter>헤더 파일\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialPort.h">
+      <Filter>헤더 파일\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialComm.h">
       <Filter>헤더 파일\utils</Filter>
     </ClInclude>
   </ItemGroup>

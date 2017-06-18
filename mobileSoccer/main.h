@@ -31,6 +31,27 @@ int robot_vr, robot_vl; // 로봇의 왼쪽, 오른쪽 바퀴 for PWM
 
 using namespace mobileCalculate;
 
+char *buffer;
+CSerialComm serialComm; //SerialComm 객체 생성
+						
+//로봇구조체 선언부
+typedef struct robot {
+	int _angle;
+	int _x;
+	int _y;
+} Robot;
+
+Robot r1; // 로봇
+bool destinated = false; // 도착했는지의 여부
+
+// 경기장 사이즈
+int width = 1024;
+int height = 1278; //temporary value
+
+// 실제 사이즈
+double realX;
+double realY;
+
 class VisionSystem
 {
 public:
@@ -48,6 +69,11 @@ public:
 	void rtnRobotsDirection(double x, double y);
 	int angle(float x1, float y1, float x2, float y2);
 	void whereisrobot(int x, int y);
+	void Velocity(Robot *robot, int vl, int vr);
+	void RobotAngle(Robot *robot, int desired_angle);
+	void Position(Robot *robot, double x, double y);
+	void Position_Angle(Robot *robot, double x, double y, int desired_angle);
+	void calculatingSize(double x, double y); // 경기장 사이즈 변환 
 	void autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
