@@ -24,6 +24,8 @@ typedef struct _Pos{
 } Pos;
 
 Pos n1, n2, n3, n4; // N 사분면 정의를 위한 변수
+int mode;//사용자 선택 모드 변수
+int xyMode_x, xyMode_y, xyMode_angle;//xy모드의 position, angle 변수
 int whichPlace, whichAngle; // 사용자 입력을 위한 변수
 int robot_vr, robot_vl; // 로봇의 왼쪽, 오른쪽 바퀴 for PWM
 
@@ -49,4 +51,6 @@ public:
 	void autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle);
 	void drawText(Mat& img_input);
 	void drawLine(Mat& img_input, double x1, double y1, double x2, double y2);
+	void xyMode();
+	void NPlaceMode();
 };
