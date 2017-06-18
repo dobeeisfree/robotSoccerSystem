@@ -31,14 +31,14 @@ void TextPutOnFrame::setTextPosition(int x, int y)
 	os_id2.textOrg.y = y + 60;
 	os_ball.textOrg.x = x;
 	os_ball.textOrg.y = y + 80;
-	os_yaxb.textOrg.x = x;
+	/*os_yaxb.textOrg.x = x;
 	os_yaxb.textOrg.y = y + 100;
 	os_ya2b2.textOrg.x = x;
-	os_ya2b2.textOrg.y = y + 120;
+	os_ya2b2.textOrg.y = y + 120;*/
 	os_angle.textOrg.x = x;
-	os_angle.textOrg.y = y + 140;
+	os_angle.textOrg.y = y + 100;
 	os_place.textOrg.x = x;
-	os_place.textOrg.y = y + 160;
+	os_place.textOrg.y = y + 120;
 }
 
 void TextPutOnFrame::onFrame(Mat& frame)
@@ -52,7 +52,8 @@ void TextPutOnFrame::onFrame(Mat& frame)
 	putText(frame, os_id1.name.str(), os_id1.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_id2.name.str(), os_id2.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_ball.name.str(), os_ball.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
-	putText(frame, os_yaxb.name.str(), os_yaxb.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
-	putText(frame, os_ya2b2.name.str(), os_ya2b2.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	//putText(frame, os_yaxb.name.str(), os_yaxb.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	//putText(frame, os_ya2b2.name.str(), os_ya2b2.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_angle.name.str(), os_angle.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(frame, os_place.name.str(), os_place.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 }
