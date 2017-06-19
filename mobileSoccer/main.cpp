@@ -326,6 +326,7 @@ void VisionSystem::drawText(Mat& img_input)
 	ver1.putstring.os_id1.name << "id1 (" << x_id1 << ", " << y_id1 << ")";
 	ver1.putstring.os_id2.name << "id2 (" << x_id2 << ", " << y_id2 << ")";
 	ver1.putstring.os_ball.name << "ball (" << x_ball << ", " << y_ball << ")";
+	ver1.putstring.os_vrvl.name << "Velocity: (L:" << realtimeCheck.vl << " , R:" << realtimeCheck.vr << ")";
 	whereisrobot(Cx, Cy); // Show where is robot
 
 	// start (10, 320)
@@ -525,9 +526,10 @@ void VisionSystem::start()
 		}
 
 		if ((char)waitKey(30) == ' ') { // space bar
+			destinated = false;
+			ans = false;
 			cout << "로봇 모드 진입, 블루투스 확인중 \n";
 			bluetooth = serialComm.connect("COM7");
-
 			if (bluetooth)
 			{
 				cout << "connect successed" << endl;
@@ -535,7 +537,6 @@ void VisionSystem::start()
 
 				while (mode_res != 1)
 				{
-					ans = false;
 					cout << "Choice Mode (XY Mode:1 or N Place Mode:2) : ";
 					mode_res = scanf("%d", &mode);
 
