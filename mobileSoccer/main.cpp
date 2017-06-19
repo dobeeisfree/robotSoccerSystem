@@ -15,13 +15,13 @@ VisionSystem::~VisionSystem()
 void VisionSystem::setFourSides()
 {
 	// Set N side
-	n1._x = 320 + 60;
+	n1._x = 320 + 160;
 	n1._y = 120;
 	n2._x = 160;
 	n2._y = 120;
 	n3._x = 160;
 	n3._y = 240 + 120;
-	n4._x = 320 + 60;
+	n4._x = 320 + 160;
 	n4._y = 240 + 120;
 }
 
@@ -131,9 +131,16 @@ int VisionSystem::angle(float x1, float y1, float x2, float y2)
 
 void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 {
+	//if (vl > 125) vl = 125;
+	//if (vr > 125) vr = 125;
+	//if (vl < -125) vl = -125;
+	//if (vr < -125) vr = -125;
+	//vl += 127;
+	//vr += 127;
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
-	string send = to_string((double)vl/(double)25.5) + "/" + to_string((double)vr/(double)25.5);
+	string send = to_string((int)vl+127) + "/" + to_string((int)vr+127);
+	//string send = to_string((double)vl-127) + "/" + to_string((double)vr-127);//127빼줌
 	vector<char> writable(send.begin(), send.end());
 	writable.push_back('\0');
 	char* ptr = &writable[0];
@@ -188,7 +195,7 @@ void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
 
 void VisionSystem::Position(Robot *robot, double x, double y)
 {
-	cout << "Position() \n";
+	cout << "Position(" << x << ", " << y << ")\n";
 	int desired_angle = 0,
 		theta_e = 0,
 		d_angle = 0,
@@ -250,10 +257,21 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 		vl = (int)(-.17 * theta_e);
 	}
 
-	if (robot->_x < x + 10 && robot->_y < y + 10)
+
+	// 예외 처리
+	double distance = sqrt(pow(robot->_x - x, 2) + pow(robot->_y - y, 2));
+	
+	if (distance < 15) // 15 거리내에서 도착
 	{
 		destinated = true;
 		Velocity(robot, 0, 0);
+
+		realtimeCheck.vl = 0;
+		realtimeCheck.vr = 0;
+		realtimeCheck.isRobotOutOfBound = false;
+		realtimeCheck.isPositionAngleCall = false;
+		realtimeCheck.isPositionCall = false;
+		realtimeCheck.isRobotAngleCall = false;
 	} 
 	else if (robot->_x >= width - 30 || robot->_y >= height - 30)// txt로 짰던 코드예외부분
 	{
@@ -271,7 +289,9 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 		realtimeCheck.vl = vl;
 		realtimeCheck.vr = vr;
 
-		if (!realtimeCheck.isPositionAngleCall) {
+		// 포지션 앵글이라면 어차피 포지션하고 앵글함수 부르니까
+		// 포지션앵글 콜이 아닐 때만 체크해줌
+		if (!realtimeCheck.isPositionAngleCall) { 
 			realtimeCheck.isRobotOutOfBound = false;
 			realtimeCheck.isPositionAngleCall = false;
 			realtimeCheck.isPositionCall = true;
@@ -287,15 +307,15 @@ void VisionSystem::Position_Angle(Robot *robot, double x, double y, int desired_
 {
 	cout << "Call Position_Angle()\n";
 	destinated = false;
+	realtimeCheck.isRobotOutOfBound = false;
+	realtimeCheck.isPositionAngleCall = true;
+	realtimeCheck.isPositionCall = false;
+	realtimeCheck.isRobotAngleCall = false;
 	Position(robot, x, y);
 	if (destinated)
 	{
 		RobotAngle(robot, desired_angle);
 	}
-	realtimeCheck.isRobotOutOfBound = false;
-	realtimeCheck.isPositionAngleCall = true;
-	realtimeCheck.isPositionCall = false;
-	realtimeCheck.isRobotAngleCall = false;
 }
 
 void VisionSystem::calculatingSize(double x, double y)
@@ -383,7 +403,6 @@ void VisionSystem::xyMode()
 
 void VisionSystem::nSideToPosition(int whichPlace)
 {
-
 	if (whichPlace == 1 || whichPlace == 2 || whichPlace == 3 || whichPlace == 4)
 	{
 
@@ -508,8 +527,12 @@ void VisionSystem::start()
 			break;
 		}
 
+		//cout << "vision \n";
+
 		if (ans) { // 모드를 한번이상 입력했다면,
+			cout << "모드를 한 번 이상 입력했다면 \n";
 			if (!destinated) { // 그리고 도착도 안 한 상태면, 실시간 처리
+				cout << "도착을 아직 안해서\n";
 				if (realtimeCheck.isPositionAngleCall)
 					Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
 				if (realtimeCheck.isPositionCall)
@@ -519,41 +542,40 @@ void VisionSystem::start()
 				if (realtimeCheck.isRobotOutOfBound)
 					Velocity(&r1, 0, 0);
 			}
+			else {
+				ans = false;
+				cout << "도착했음\n";
+			}
 		}
 
 		if ((char)waitKey(30) == ' ') { // space bar
 			destinated = false;
 			ans = false;
-			cout << "로봇 모드 진입, 블루투스 확인중 \n";
-			bluetooth = serialComm.connect("COM7");
-			if (bluetooth)
+			int mode_res = 0;
+
+			if (mode_res != 1)
 			{
-				cout << "connect successed" << endl;
-				int mode_res = 0;
+				cout << "Choice Mode (XY Mode:1 or N Place Mode:2) : ";
+				mode_res = scanf("%d", &mode);
 
-				while (mode_res != 1)
-				{
-					cout << "Choice Mode (XY Mode:1 or N Place Mode:2) : ";
-					mode_res = scanf("%d", &mode);
-
-					if (mode_res == 1) {
-						ans = true;
-						switch (mode)
-						{
-							case 1:
-								xyMode(); //Will Call Position_Angle()
-								break;
-							case 2:
-								NPlaceMode(); //Will Call Position()
-								break;
-							default:
-								break;
-						}
+				if (mode_res == 1) {
+					ans = true;
+					cout << "ans is " << ans << "\n";
+					switch (mode)
+					{
+					case 1:
+						xyMode(); //Will Call Position_Angle()
+						break;
+					case 2:
+						NPlaceMode(); //Will Call Position()
+						break;
+					default:
+						break;
 					}
-					if (waitKey(1) == 27) return;
 				}
+				if (waitKey(1) == 27) return;
 			}
-			else cout << "connect faliled" << endl; 
+			else cout << "Try again~\n";
 		}
 	}
 }
@@ -567,6 +589,16 @@ int main()
 		return -1;
 	}
 	vs.setFourSides(); // N side
-	vs.start();
+	
+	cout << "블루투스 확인중 \n";
+	bluetooth = serialComm.connect("COM7");
+
+	if (bluetooth)
+	{
+		cout << "connect successed" << endl;
+		vs.start();
+	}
+	else cout << "connect faliled" << endl; 
+	
 	return 0;
 }
