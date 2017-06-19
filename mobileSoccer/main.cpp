@@ -147,6 +147,7 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 
 void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
 {
+	cout << "RobotAngle() \n";
 	int theta_e, vl, vr;
 	theta_e = desired_angle - (int)robot->_angle;
 
@@ -187,6 +188,7 @@ void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
 
 void VisionSystem::Position(Robot *robot, double x, double y)
 {
+	cout << "Position() \n";
 	int desired_angle = 0,
 		theta_e = 0,
 		d_angle = 0,
@@ -283,6 +285,7 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 
 void VisionSystem::Position_Angle(Robot *robot, double x, double y, int desired_angle)
 {
+	cout << "Call Position_Angle()\n";
 	destinated = false;
 	Position(robot, x, y);
 	if (destinated)
@@ -355,29 +358,25 @@ void VisionSystem::xyMode()
 {
 	int x, y, angle;
 	int res = NULL;
+	cout << "Input X, Y Position AND Angle, For Robot Move : ";
+	res = scanf("x:%d, y:%d, angle:%d", &xyMode_x, &xyMode_y, &xyMode_angle);
 
-	while (res != 3)
-	{
-		cout << "Input X, Y Position AND Angle, For Robot Move : ";
-		res = scanf("x:%d, y:%d, angle:%d", &xyMode_x, &xyMode_y, &xyMode_angle);
-
-		if (res == 3) {
-			//x, y, angle 범위 처리(경기장 크기와 각도 제한)
-			if ((x < 0 || x>320) && (y < 0 || y>240) && (angle<0 || angle>360)) {
-				cout << "Out Of Range \n";
-				Velocity(&r1, 0, 0);
-				realtimeCheck.vl = 0;
-				realtimeCheck.vr = 0;
-				realtimeCheck.isRobotOutOfBound = true;
-				realtimeCheck.isPositionAngleCall = false;
-				realtimeCheck.isPositionCall = false;
-				realtimeCheck.isRobotAngleCall = false;
-			}
-			else {
-				cout << "ok Position_Angle Call\n";
-				Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
-				return;
-			}
+	if (res == 3) {
+		//x, y, angle 범위 처리(경기장 크기와 각도 제한)
+		if ((x < 0 || x>320) && (y < 0 || y>240) && (angle<0 || angle>360)) {
+			cout << "Out Of Range \n";
+			Velocity(&r1, 0, 0);
+			realtimeCheck.vl = 0;
+			realtimeCheck.vr = 0;
+			realtimeCheck.isRobotOutOfBound = true;
+			realtimeCheck.isPositionAngleCall = false;
+			realtimeCheck.isPositionCall = false;
+			realtimeCheck.isRobotAngleCall = false;
+		}
+		else {
+			cout << "ok Position_Angle Call\n";
+			Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
+			return;
 		}
 	}
 }
@@ -412,14 +411,11 @@ void VisionSystem::NPlaceMode()
 {
 	// User Input for N sides
 	int res = NULL;
-	while (res != 1)
-	{
-		cout << "Input Number 1 ~ 4, For Robot Move :";
-		int res = scanf("%d", &whichPlace);
-		if (res == 1) {
-			cout << "ok Position Call\n";
-			nSideToPosition(whichPlace);
-		}
+	cout << "Input Number 1 ~ 4, For Robot Move :";
+	res = scanf("%d", &whichPlace);
+	if (res == 1) {
+		cout << "ok Position Call\n";
+		nSideToPosition(whichPlace);
 	}
 }
 
