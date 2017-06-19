@@ -130,7 +130,7 @@ int VisionSystem::angle(float x1, float y1, float x2, float y2)
 }
 
 void VisionSystem::Velocity(Robot *robot, int vl, int vr)
-{
+{     
 	//if (vl > 125) vl = 125;
 	//if (vr > 125) vr = 125;
 	//if (vl < -125) vl = -125;
@@ -139,10 +139,11 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 	//vr += 127;
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
-	realtimeCheck.vl = vl*1.27;
-	realtimeCheck.vr = vr*1.27;
+	double weight = 1.27;
+	realtimeCheck.vl = vl*weight;
+	realtimeCheck.vr = vr*weight;
 
-	string send = to_string((int)(vl*1.27)) + "/" + to_string((int)(vr*1.27)) + "\0";
+	string send = to_string((int)(vl*weight)) + "/" + to_string((int)(vr*weight)) + "\0";
 	cout <<  "send string: " << send << "\n";
 	//string send = to_string((double)vl-127) + "/" + to_string((double)vr-127);//127빼줌
 	//vector<char> writable(send.begin(), send.end());
@@ -280,7 +281,7 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 	// 예외 처리
 	double distance = sqrt(pow(robot->_x - x, 2) + pow(robot->_y - y, 2));
 	
-	if (distance < 15) // 15 거리내에서 도착
+	if (distance < 50) // 15 거리내에서 도착
 	{
 		destinated = true;
 		Velocity(robot, 0, 0);
