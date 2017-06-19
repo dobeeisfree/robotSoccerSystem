@@ -30,6 +30,7 @@ public:
 	str_stream os_ball;
 	str_stream os_angle;
 	str_stream os_place;
+	str_stream os_vrvl;
 
 	TextPutOnFrame();
 	~TextPutOnFrame();

@@ -20,6 +20,7 @@ void TextPutOnFrame::clearAll()
 	os_ball.name.str("");
 	os_angle.name.str("");
 	os_place.name.str("");
+	os_vrvl.name.str("");
 }
 
 void TextPutOnFrame::setTextPosition(int x, int y)
@@ -42,6 +43,8 @@ void TextPutOnFrame::setTextPosition(int x, int y)
 	os_place.textOrg.y = y + 120;
 	os_cxcy.textOrg.x = x;
 	os_cxcy.textOrg.y = y + 140;
+	os_vrvl.textOrg.x = x + 240;
+	os_vrvl.textOrg.y = y + 140;
 }
 
 void TextPutOnFrame::onFrame(Mat& frame)
@@ -60,4 +63,5 @@ void TextPutOnFrame::onFrame(Mat& frame)
 	putText(frame, os_angle.name.str(), os_angle.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_place.name.str(), os_place.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 	putText(frame, os_cxcy.name.str(), os_cxcy.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+	putText(frame, os_vrvl.name.str(), os_vrvl.textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
 }
