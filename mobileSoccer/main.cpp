@@ -14,7 +14,7 @@ VisionSystem::~VisionSystem()
 
 void VisionSystem::setFourSides()
 {
-	// N사분면 정의
+	// Set N side
 	n1._x = 320 + 60;
 	n1._y = 120;
 	n2._x = 160;
@@ -79,8 +79,8 @@ void VisionSystem::drawAreaBox(Mat img_input, Mat stats, int numOfLables, char *
 
 void VisionSystem::drawLine(Mat& img_input, double x1, double y1, double x2, double y2)
 {
-	line(img_input, cvPoint(Rx, Ry), cvPoint(Cx, Cy), CV_RGB(0, 0, 0), 3, 8, 0);	   // 방향선
-	line(img_input, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(255, 255, 255), 1, 8, 0); // 중심선
+	line(img_input, cvPoint(Rx, Ry), cvPoint(Cx, Cy), CV_RGB(0, 0, 0), 3, 8, 0);	   // 占쏙옙占썩선
+	line(img_input, cvPoint(x1, y1), cvPoint(x2, y2), CV_RGB(255, 255, 255), 1, 8, 0); // 占쌩심쇽옙
 }
 
 void VisionSystem::makeLine(double x1, double y1, double x2, double y2)
@@ -101,16 +101,9 @@ void VisionSystem::findCenterPoint(double x1, double y1, double x2, double y2)
 	Cy = (y1 + y2) / 2; //find robot's center point
 }
 
-void VisionSystem::makeTheta()
-{
-	//theta = atan((y1 - y2) / (x1 - x2)) - (3.1415f / 4);
-	theta = (CV_PI / 4);
-	//theta = 20;
-}
-
 void VisionSystem::rtnRobotsDirection(double x, double y)
 {
-	//회전식: 
+	// 회전식
 	x = x - Cx;
 	y = y - Cy;
 	Rx = (x)*cos(theta) - (y)*sin(theta);
@@ -119,7 +112,6 @@ void VisionSystem::rtnRobotsDirection(double x, double y)
 	Rx += Cx;
 	Ry += Cy;
 
-	//좌표의 형태 
 	ver1.putstring.os_yaxb.name << "connected line within two idcolors: y = " << a << "x + " << b;
 
 	a2 = double(Ry - Cy) / (Rx - Cx);
@@ -141,11 +133,11 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 {
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
-	string send = to_string(vl) + "/" + to_string(vr);
+	string send = to_string((double)vl/(double)25.5) + "/" + to_string((double)vr/(double)25.5);
 	vector<char> writable(send.begin(), send.end());
 	writable.push_back('\0');
 	char* ptr = &writable[0];
-	
+	cout << "Send Value : " << ptr << "\n";
 	if (!serialComm.sendCommand(ptr))
 	{
 		cout << "send command failed" << endl;
@@ -181,11 +173,25 @@ void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
 		vr = (int)(13.0 / 90.0 * (double)theta_e);
 	}
 	Velocity(robot, vl, vr);//계산된 회전해야하는 앵글값대로 바퀴조정 ->아두이노로 보내는 함수 호출!
+	
+	realtimeCheck.vl = vl;
+	realtimeCheck.vr = vr;
+	
+	if (!realtimeCheck.isPositionAngleCall) {
+		realtimeCheck.isRobotOutOfBound = false;
+		realtimeCheck.isPositionAngleCall = false;
+		realtimeCheck.isPositionCall = false;
+		realtimeCheck.isRobotAngleCall = true;
+	}
 }
 
 void VisionSystem::Position(Robot *robot, double x, double y)
 {
-	int desired_angle = 0, theta_e = 0, d_angle = 0, vl, vr, vc = 125;
+	int desired_angle = 0,
+		theta_e = 0,
+		d_angle = 0,
+		vl, vr,
+		vc = 125;
 
 	double dx, dy, d_e, Ka = 10.0 / 90.0;
 	dx = x - robot->_x;
@@ -246,14 +252,30 @@ void VisionSystem::Position(Robot *robot, double x, double y)
 	{
 		destinated = true;
 		Velocity(robot, 0, 0);
-	}// txt로 짰던 코드예외부분
-	else if (robot->_x >= width - 30 || robot->_y >= height - 30)
+	} 
+	else if (robot->_x >= width - 30 || robot->_y >= height - 30)// txt로 짰던 코드예외부분
 	{
 		Velocity(robot, 0, 0);//일단멈춤
 							  //그 이후 어케할지는 알아서 생각 (흑흑)
+		realtimeCheck.vl = 0;
+		realtimeCheck.vr = 0;
+		realtimeCheck.isRobotOutOfBound = true;
+		realtimeCheck.isPositionAngleCall = false;
+		realtimeCheck.isPositionCall = false;
+		realtimeCheck.isRobotAngleCall = false;
 	}
 	else
 	{
+		realtimeCheck.vl = vl;
+		realtimeCheck.vr = vr;
+
+		if (!realtimeCheck.isPositionAngleCall) {
+			realtimeCheck.isRobotOutOfBound = false;
+			realtimeCheck.isPositionAngleCall = false;
+			realtimeCheck.isPositionCall = true;
+			realtimeCheck.isRobotAngleCall = false;
+		}
+
 		Velocity(robot, vl, vr);//아두이노로 보내는함수!
 	}
 
@@ -267,6 +289,10 @@ void VisionSystem::Position_Angle(Robot *robot, double x, double y, int desired_
 	{
 		RobotAngle(robot, desired_angle);
 	}
+	realtimeCheck.isRobotOutOfBound = false;
+	realtimeCheck.isPositionAngleCall = true;
+	realtimeCheck.isPositionCall = false;
+	realtimeCheck.isRobotAngleCall = false;
 }
 
 void VisionSystem::calculatingSize(double x, double y)
@@ -284,7 +310,6 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 {
 	makeLine(x1, y1, x2, y2);
 	findCenterPoint(x1, y1, x2, y2);
-	makeTheta();
 	rtnRobotsDirection(x1, y1);
 	ver1.putstring.os_angle.name << "angle: " << angle(x1, y1, x2, y2);
 	drawLine(img_input, x1, y1, x2, y2);
@@ -292,6 +317,8 @@ void VisionSystem::calculateTheLine(Mat& img_input, double x1, double y1, double
 	r1._angle = angle(x1, y1, x2, y2);
 	r1._x = Cx;
 	r1._y = Cy;
+
+	ver1.putstring.os_cxcy.name << "Robot: (" << Cx << ", " << Cy << ")";
 }
 
 void VisionSystem::drawText(Mat& img_input)
@@ -299,6 +326,7 @@ void VisionSystem::drawText(Mat& img_input)
 	ver1.putstring.os_id1.name << "id1 (" << x_id1 << ", " << y_id1 << ")";
 	ver1.putstring.os_id2.name << "id2 (" << x_id2 << ", " << y_id2 << ")";
 	ver1.putstring.os_ball.name << "ball (" << x_ball << ", " << y_ball << ")";
+	ver1.putstring.os_vrvl.name << "Velocity: (L:" << realtimeCheck.vl << " , R:" << realtimeCheck.vr << ")";
 	whereisrobot(Cx, Cy); // Show where is robot
 
 	// start (10, 320)
@@ -323,71 +351,78 @@ void VisionSystem::whereisrobot(int x, int y)
 	ver1.putstring.os_place.name << "N=" << place;
 }
 
-void VisionSystem::autoPosition(int robotCx, int robotCy, int desired_x, int desired_y, int whichAngle)
-{
-	/*
-	@param robotCx, robotCy 로봇의 중점좌표
-	@param desired_x, int desired_y 목표 위치
-	@param whichAngle 회전 각도
-	*/
-	// calculating... here code..
-	robot_vr = 50; // dummy test
-	robot_vl = 100; // dummy test
-}
 void VisionSystem::xyMode()
 {
 	int x, y, angle;
-	while (1) {
-		//xy mode의 x,y position과 angle 입력받기
-		cout << "Input X, Y Position AND Angle, For Robot Move \n";
-		x = scanf("%d", &xyMode_x);
-		y = scanf("%d", &xyMode_y);
-		angle = scanf("%d", &xyMode_angle);
+	int res = NULL;
 
-		//x, y, angle 범위 처리(경기장 크기와 각도 제한)
-		if ((x < 0 || x>320) && (y < 0 || y>240) && (angle<0 || angle>360)) {
-			cout << "Out Of Range \n";
-		} else {
-			break;
+	while (res != 3)
+	{
+		cout << "Input X, Y Position AND Angle, For Robot Move : ";
+		res = scanf("x:%d, y:%d, angle:%d", &xyMode_x, &xyMode_y, &xyMode_angle);
+
+		if (res == 3) {
+			//x, y, angle 범위 처리(경기장 크기와 각도 제한)
+			if ((x < 0 || x>320) && (y < 0 || y>240) && (angle<0 || angle>360)) {
+				cout << "Out Of Range \n";
+				Velocity(&r1, 0, 0);
+				realtimeCheck.vl = 0;
+				realtimeCheck.vr = 0;
+				realtimeCheck.isRobotOutOfBound = true;
+				realtimeCheck.isPositionAngleCall = false;
+				realtimeCheck.isPositionCall = false;
+				realtimeCheck.isRobotAngleCall = false;
+			}
+			else {
+				cout << "ok Position_Angle Call\n";
+				Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
+				return;
+			}
 		}
 	}
-	autoPosition(Cx, Cy, x, y, angle);
 }
+
+void VisionSystem::nSideToPosition(int whichPlace)
+{
+
+	if (whichPlace == 1 || whichPlace == 2 || whichPlace == 3 || whichPlace == 4)
+	{
+
+		// Call autoPosition for calculate angle, position
+		// send robot vr, vl
+
+		switch (whichPlace) {
+		case 1:
+			Position(&r1, n1._x, n1._y);
+			return;
+		case 2:
+			Position(&r1, n2._x, n2._y);
+			return;
+		case 3:
+			Position(&r1, n3._x, n3._y);
+			return;
+		case 4:
+			Position(&r1, n4._x, n4._y);
+			return;
+		}
+	}
+}
+
 void VisionSystem::NPlaceMode()
 {
 	// User Input for N sides
 	int res = NULL;
 	while (res != 1)
 	{
-		cout << "Input Number 1 ~ 4, For Robot Move \n";
+		cout << "Input Number 1 ~ 4, For Robot Move :";
 		int res = scanf("%d", &whichPlace);
-		if (res != 1 || res != 2 || res != 3 || res != 4) // 성공하지 못한 입력
-		{
-			cout << "Try agin \n";
+		if (res == 1) {
+			cout << "ok Position Call\n";
+			nSideToPosition(whichPlace);
 		}
 	}
-
-<<<<<<< HEAD
-	// Call autoPosition for calculate angle, position
-	// send robot vr, vl
-	switch (whichPlace) {
-	case 1:
-		autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
-		break;
-	case 2:
-		autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
-		break;
-	case 3:
-		autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
-		break;
-	case 4:
-		autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
-		break;
-	}
 }
-=======
 
->>>>>>> eab81dc62340e7fc42b962dc7fd6730120a70a99
 void VisionSystem::start()
 {
 	while (true)
@@ -405,20 +440,7 @@ void VisionSystem::start()
 			cout << "Can not find web camm...\n";
 			break;
 		}
-<<<<<<< HEAD
 
-		cout << "Choice Mode (XY Mode:1 or N Place Mode:2) \n";
-		int mode = scanf("%d", &mode);
-		if (mode == 1) {
-			xyMode();				
-		}
-		else if (mode == 2) {
-			NPlaceMode();
-		}
-
-=======
-		
->>>>>>> eab81dc62340e7fc42b962dc7fd6730120a70a99
 		// RGB to HSV
 		cvtColor(img_input, img_hsv, COLOR_BGR2HSV);
 
@@ -489,63 +511,53 @@ void VisionSystem::start()
 			cout << "종료합니다 \n";
 			break;
 		}
-		
-		if ((char)waitKey(30) == ' ') {
-			cout << "로봇 모드 진입 \n";
-			cout << "블루투스 연결 중 ... \n";
 
-			if (!serialComm.connect("COM7")) //COM7번의 포트를 오픈한다. 실패할 경우 리턴으로 종료 한다.
-			{
-				cout << "connect faliled" << endl;
+		if (ans) { // 모드를 한번이상 입력했다면,
+			if (!destinated) { // 그리고 도착도 안 한 상태면, 실시간 처리
+				if (realtimeCheck.isPositionAngleCall)
+					Position_Angle(&r1, xyMode_x, xyMode_y, xyMode_angle);
+				if (realtimeCheck.isPositionCall)
+					nSideToPosition(whichPlace); //Will Call Positon()
+				if (realtimeCheck.isRobotAngleCall)
+					RobotAngle(&r1, xyMode_angle);
+				if (realtimeCheck.isRobotOutOfBound)
+					Velocity(&r1, 0, 0);
 			}
-			else 
+		}
+
+		if ((char)waitKey(30) == ' ') { // space bar
+			destinated = false;
+			ans = false;
+			cout << "로봇 모드 진입, 블루투스 확인중 \n";
+			bluetooth = serialComm.connect("COM7");
+			if (bluetooth)
 			{
 				cout << "connect successed" << endl;
-				while (true) 
-				{
-					cout << "전송할 (1:left, 2:right, 3:Stop, 4:Forward, 5: Back)를 입력하세요 : ";
-					cin >> buffer;
-					if (!serialComm.sendCommand(buffer))
-					{
-						cout << "send command failed" << endl;
-					}
-					else cout << "send Command success" << endl;
-					buffer = '\0';
+				int mode_res = 0;
 
+				while (mode_res != 1)
+				{
+					cout << "Choice Mode (XY Mode:1 or N Place Mode:2) : ";
+					mode_res = scanf("%d", &mode);
+
+					if (mode_res == 1) {
+						ans = true;
+						switch (mode)
+						{
+							case 1:
+								xyMode(); //Will Call Position_Angle()
+								break;
+							case 2:
+								NPlaceMode(); //Will Call Position()
+								break;
+							default:
+								break;
+						}
+					}
 					if (waitKey(1) == 27) return;
 				}
 			}
-
-			// User Input for N sides
-			/*
-			int res = NULL;
-			while (res != 1)
-			{
-				cout << "Input Number 1 ~ 4, For Robot Move \n";
-				int res = scanf("%d", &whichPlace);
-				if (res == 0) // 성공하지 못한 입력.. 
-				{
-					cout << "Try agin \n";
-				}
-			}
-
-			// Call autoPosition for calculate angle, position
-			// send robot vr, vl
-			switch (whichPlace) {
-			case 1:
-				autoPosition(Cx, Cy, n1._x, n1._y, whichAngle);
-				break;
-			case 2:
-				autoPosition(Cx, Cy, n2._x, n2._y, whichAngle);
-				break;
-			case 3:
-				autoPosition(Cx, Cy, n3._x, n3._y, whichAngle);
-				break;
-			case 4:
-				autoPosition(Cx, Cy, n4._x, n4._y, whichAngle);
-				break;
-			}
-			*/
+			else cout << "connect faliled" << endl; 
 		}
 	}
 }
