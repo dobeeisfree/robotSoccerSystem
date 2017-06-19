@@ -93,7 +93,7 @@ bool CSerialPort::SetCommunicationTimeouts(DWORD ReadIntervalTimeout,
 	return true;
 }
 
-bool CSerialPort::WriteByte(char *bybyte)
+bool CSerialPort::WriteByte(char bybyte)
 {
 	//iBytesWritten=0;
 	m_iBytesWritten = 0;

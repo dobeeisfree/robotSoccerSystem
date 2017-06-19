@@ -24,7 +24,7 @@ public:
 	void ClosePort();
 	bool ReadByte(BYTE &resp);
 	bool ReadByte(BYTE* &resp, UINT size);
-	bool WriteByte(char *bybyte);
+	bool WriteByte(char bybyte);
 	bool OpenPort(CString portname);
 	bool SetCommunicationTimeouts(DWORD ReadIntervalTimeout,
 		DWORD ReadTotalTimeoutMultiplier, DWORD ReadTotalTimeoutConstant,
