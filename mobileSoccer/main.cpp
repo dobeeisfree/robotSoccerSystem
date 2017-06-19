@@ -139,17 +139,36 @@ void VisionSystem::Velocity(Robot *robot, int vl, int vr)
 	//vr += 127;
 	//Put your velocity-data-transfer between vision and arduino codes in here
 	//아두이노로 신호 전송하는 코드.
-	string send = to_string((int)vl+127) + "/" + to_string((int)vr+127);
+	realtimeCheck.vl = vl*1.27;
+	realtimeCheck.vr = vr*1.27;
+
+	string send = to_string((int)(vl*1.27)) + "/" + to_string((int)(vr*1.27)) + "\0";
+	cout <<  "send string: " << send << "\n";
 	//string send = to_string((double)vl-127) + "/" + to_string((double)vr-127);//127빼줌
-	vector<char> writable(send.begin(), send.end());
-	writable.push_back('\0');
-	char* ptr = &writable[0];
-	cout << "Send Value : " << ptr << "\n";
-	if (!serialComm.sendCommand(ptr))
+	//vector<char> writable(send.begin(), send.end());
+	//writable.push_back('\0');
+	//char* ptr = &writable[0];
+
+	for (int i = 0; i < send.length(); i++) {
+		// 하나씩 계속 보내
+		if (!serialComm.sendCommand(send.at(i)))
+		{
+			cout << "send command failed" << endl;
+		}
+		else {
+			cout << "send value:" << send.at(i) << "\n";
+			cout << "send Command success" << endl;
+		}
+	}
+	
+	send = "";
+	
+	//cout << "Send Value : " << ptr << "\n";
+	/*if (!serialComm.sendCommand(ptr))
 	{
 		cout << "send command failed" << endl;
 	}
-	else cout << "send Command success" << endl;
+	else cout << "send Command success" << endl;*/
 }
 
 void VisionSystem::RobotAngle(Robot *robot, int desired_angle)
